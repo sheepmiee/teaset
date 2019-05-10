@@ -49,6 +49,7 @@ export default class OverlayView extends Component {
       let BackHandler = ReactNative.BackHandler ? ReactNative.BackHandler : ReactNative.BackAndroid;
       this.backListener = BackHandler.addEventListener('hardwareBackPress', () => {
         if (this.props.closeOnHardwareBackPress) {
+          this.props.backHandlerFunc && this.props.backHandlerFunc(); // 添加处
           this.closeRequest();
           return true;          
         } else {
