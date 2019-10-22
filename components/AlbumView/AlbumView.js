@@ -29,6 +29,8 @@ export default class AlbumView extends Component {
     onWillLoadImage: PropTypes.func, //(index)
     onLoadImageSuccess: PropTypes.func, //(index, width, height)
     onLoadImageFailure: PropTypes.func, //(index, error)
+    onTransformingFunc: PropTypes.func, //({x,y,scale,translateY})
+
   };
 
   static defaultProps = {
@@ -37,6 +39,7 @@ export default class AlbumView extends Component {
     maxScale: 3,
     space: 20,
     control: false,
+    onTransformingFunc:()=>{}
   };
 
   static Sheet = AlbumSheet;
@@ -101,7 +104,8 @@ export default class AlbumView extends Component {
   checkScroll(translateX) {
     let {images} = this.props;
     let {index} = this.state;
-
+    if(!this.refs['sheet' + index])return
+    
     let {x, y, width, height} = this.refs['sheet' + index].contentLayout;
     let ltx = translateX, rtx = translateX;
     if (width > this.layout.width) {
@@ -146,6 +150,7 @@ export default class AlbumView extends Component {
 
     index > 0 && this.refs['sheet' + (index - 1)].scrollX(ltx, false);
     index < (images.length - 1) && this.refs['sheet' + (index + 1)].scrollX(rtx, false);
+    this.props.onTransformingFunc({x,y,scale,translateY});
   }
 
   onWillInertialMove(translateX, translateY, newX, newY) {
