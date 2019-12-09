@@ -39,6 +39,7 @@ export default class AlbumView extends Component {
     maxScale: 3,
     space: 20,
     control: false,
+    hasRotate:false
     onTransformingFunc:()=>{}
   };
 
@@ -52,6 +53,7 @@ export default class AlbumView extends Component {
     let index = props.index || props.index === 0 ? props.index : props.defaultIndex;
     this.state = {
       index: index,
+      rotate: 0
     };
   }
 
@@ -171,6 +173,7 @@ export default class AlbumView extends Component {
     return (
       <AlbumSheet
         style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: 0}}
+        transformStyle={[{rotate: this.state.rotate+'deg'}]}//新增 支持旋转
         pointerEvents={index === this.state.index ? 'auto' : 'none'}
         minScale={1}
         maxScale={maxScale}
@@ -197,7 +200,7 @@ export default class AlbumView extends Component {
   }
 
   render() {
-    let {images, thumbs, defaultIndex, index, maxScale, space, control, children, onLayout, onWillChange, onChange, onPress, onLongPress, onWillLoadImage, onLoadImageSuccess, onLoadImageFailure, ...others} = this.props;
+    let {hasRotate, images, thumbs, defaultIndex, index, maxScale, space, control, children, onLayout, onWillChange, onChange, onPress, onLongPress, onWillLoadImage, onLoadImageSuccess, onLoadImageFailure, ...others} = this.props;
 
     if (React.isValidElement(control)) {
       control = React.cloneElement(control, {index: this.state.index, total: images.length, carousel: this});
@@ -215,6 +218,56 @@ export default class AlbumView extends Component {
       >
         {images.map((item, index) => this.renderImage(index))}
         {control}
+        {
+          hasRotate?
+          <View style={{
+          width: 50,
+          height: 50,
+          borderRadius: 25,
+          position: 'absolute',
+          bottom: 20,
+          left: 20,
+          backgroundColor: 'rgba(0,0,0,.1)',
+          justifyContent:'center',
+          alignItems:'center'
+        }}>
+          <TouchableOpacity activeOpacity={.8}
+                            onPress={() => {
+                              let {rotate} = this.state;
+                              // console.warn(rotate)
+                              rotate += -90;
+                              this.setState({rotate})
+
+                            }}
+                            style={{width: '100%', height: '100%',justifyContent:'center', alignItems:'center'}}>
+            {this.props.leftIcon?<Image source={this.props.leftIcon} style={{width:30,height:30,tintColor:'#fff'}}/>:<Text style={{color: '#eee'}}>左</Text>}
+          </TouchableOpacity>
+        </View>:null
+        }
+
+        {
+          hasRotate?
+          <View style={{
+          width: 50,
+          height: 50,
+          borderRadius: 25,
+          position: 'absolute',
+          bottom: 20,
+          right: 20,
+          backgroundColor: 'rgba(0,0,0,.1)',
+
+        }}>
+          <TouchableOpacity activeOpacity={.8}
+                            onPress={() => {
+                              let {rotate} = this.state;
+                              rotate += 90;
+                              this.setState({rotate})
+                            }}
+                            style={{width: '100%', height: '100%',justifyContent:'center', alignItems:'center'}}>
+            {this.props.rightIcon?<Image source={this.props.rightIcon} style={{width:30,height:30,tintColor:'#fff'}}/>:<Text style={{color: '#eee'}}>右</Text>}
+          </TouchableOpacity>
+        </View>:null
+        }
       </View>
     );
   }
