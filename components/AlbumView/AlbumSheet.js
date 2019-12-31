@@ -239,6 +239,22 @@ export default class AlbumSheet extends TransformView {
   }
 
   layoutChange(width, height) {
+    
+    if(this.props.rotate){ //旋转90度倍数则互换宽高
+      if( (this.props.rotate/90)%2===1){
+        width=this.layoutHeight;
+        height=this.layoutWidth;
+      }else{
+        width=this.layoutWidth;
+        height=this.layoutHeight;
+      }
+
+
+    }
+    if(this.props.rotate===0){
+      width=this.layoutWidth;
+      height=this.layoutHeight;
+    }
     let {actualWidth, actualHeight, fitWidth, fitHeight, viewWidth, viewHeight} = this.state;
     let needRestoreImage = false;
     viewWidth = width;
@@ -255,6 +271,7 @@ export default class AlbumSheet extends TransformView {
   }
 
   imageSizeChange(width, height) {
+    
     let {actualWidth, actualHeight, fitWidth, fitHeight, viewWidth, viewHeight} = this.state;
     let needRestoreImage = false;
     actualWidth = width;
@@ -276,6 +293,8 @@ export default class AlbumSheet extends TransformView {
 
   onLayout(e) {
     let {width, height} = e.nativeEvent.layout;
+    this.layoutWidth = width;
+    this.layoutHeight = height;
     this.layoutChange(width, height);
     super.onLayout(e);
   }
