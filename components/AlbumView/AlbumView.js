@@ -4,12 +4,13 @@
 
 import React, {Component} from "react";
 import PropTypes from 'prop-types';
-import {StyleSheet, View, Image, Animated, ViewPropTypes} from 'react-native';
+import {StyleSheet, View, Image, Animated, ViewPropTypes, TouchableOpacity, Text} from 'react-native';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 
 import Theme from 'teaset/themes/Theme';
 import AlbumSheet from './AlbumSheet';
 import CarouselControl from '../Carousel/CarouselControl';
+import {Overlay} from "teaset";
 
 export default class AlbumView extends Component {
 
@@ -29,8 +30,6 @@ export default class AlbumView extends Component {
     onWillLoadImage: PropTypes.func, //(index)
     onLoadImageSuccess: PropTypes.func, //(index, width, height)
     onLoadImageFailure: PropTypes.func, //(index, error)
-    onTransformingFunc: PropTypes.func, //({x,y,scale,translateY})
-
   };
 
   static defaultProps = {
@@ -40,7 +39,6 @@ export default class AlbumView extends Component {
     space: 20,
     control: false,
     hasRotate:false
-    onTransformingFunc:()=>{}
   };
 
   static Sheet = AlbumSheet;
@@ -53,7 +51,7 @@ export default class AlbumView extends Component {
     let index = props.index || props.index === 0 ? props.index : props.defaultIndex;
     this.state = {
       index: index,
-      rotate: 0
+      rotate:0
     };
   }
 
@@ -106,8 +104,7 @@ export default class AlbumView extends Component {
   checkScroll(translateX) {
     let {images} = this.props;
     let {index} = this.state;
-    if(!this.refs['sheet' + index])return
-    
+
     let {x, y, width, height} = this.refs['sheet' + index].contentLayout;
     let ltx = translateX, rtx = translateX;
     if (width > this.layout.width) {
@@ -152,7 +149,6 @@ export default class AlbumView extends Component {
 
     index > 0 && this.refs['sheet' + (index - 1)].scrollX(ltx, false);
     index < (images.length - 1) && this.refs['sheet' + (index + 1)].scrollX(rtx, false);
-    this.props.onTransformingFunc({x,y,scale,translateY});
   }
 
   onWillInertialMove(translateX, translateY, newX, newY) {
@@ -164,7 +160,7 @@ export default class AlbumView extends Component {
   }
 
   renderImage(index) {
-    let {images, thumbs, maxScale, space, onPress, onLongPress, onWillLoadImage, onLoadImageSuccess, onLoadImageFailure} = this.props;
+    let {images, thumbs, maxScale, space, onPress, onLongPress, onWillLoadImage, onLoadImageSuccess, onLoadImageFailure,transformStyle} = this.props;
 
     let position = 'center';
     if (index < this.state.index) position = 'left';
@@ -174,6 +170,7 @@ export default class AlbumView extends Component {
       <AlbumSheet
         style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: 0}}
         transformStyle={[{rotate: this.state.rotate+'deg'}]}//新增 支持旋转
+        rotate={this.state.rotate}//新增 支持旋转
         pointerEvents={index === this.state.index ? 'auto' : 'none'}
         minScale={1}
         maxScale={maxScale}
@@ -200,7 +197,7 @@ export default class AlbumView extends Component {
   }
 
   render() {
-    let {hasRotate, images, thumbs, defaultIndex, index, maxScale, space, control, children, onLayout, onWillChange, onChange, onPress, onLongPress, onWillLoadImage, onLoadImageSuccess, onLoadImageFailure, ...others} = this.props;
+    let {hasRotate,images, thumbs, defaultIndex, index, maxScale, space, control, children, onLayout, onWillChange, onChange, onPress, onLongPress, onWillLoadImage, onLoadImageSuccess, onLoadImageFailure, ...others} = this.props;
 
     if (React.isValidElement(control)) {
       control = React.cloneElement(control, {index: this.state.index, total: images.length, carousel: this});
@@ -218,6 +215,7 @@ export default class AlbumView extends Component {
       >
         {images.map((item, index) => this.renderImage(index))}
         {control}
+
         {
           hasRotate?
           <View style={{
@@ -225,7 +223,7 @@ export default class AlbumView extends Component {
           height: 50,
           borderRadius: 25,
           position: 'absolute',
-          bottom: 20,
+          bottom: 15,
           left: 20,
           backgroundColor: 'rgba(0,0,0,.1)',
           justifyContent:'center',
@@ -236,7 +234,11 @@ export default class AlbumView extends Component {
                               let {rotate} = this.state;
                               // console.warn(rotate)
                               rotate += -90;
-                              this.setState({rotate})
+                              this.setState({rotate},()=>{
+                                images.forEach((item,index)=>{
+                                  this.refs['sheet'+index] && this.refs['sheet'+index].layoutChange()
+                                })
+                              })
 
                             }}
                             style={{width: '100%', height: '100%',justifyContent:'center', alignItems:'center'}}>
@@ -252,7 +254,7 @@ export default class AlbumView extends Component {
           height: 50,
           borderRadius: 25,
           position: 'absolute',
-          bottom: 20,
+          bottom: 15,
           right: 20,
           backgroundColor: 'rgba(0,0,0,.1)',
 
@@ -261,13 +263,18 @@ export default class AlbumView extends Component {
                             onPress={() => {
                               let {rotate} = this.state;
                               rotate += 90;
-                              this.setState({rotate})
+                              this.setState({rotate},()=>{
+                                images.forEach((item,index)=>{
+                                  this.refs['sheet'+index] && this.refs['sheet'+index].layoutChange()
+                                })
+                              })
                             }}
                             style={{width: '100%', height: '100%',justifyContent:'center', alignItems:'center'}}>
             {this.props.rightIcon?<Image source={this.props.rightIcon} style={{width:30,height:30,tintColor:'#fff'}}/>:<Text style={{color: '#eee'}}>右</Text>}
           </TouchableOpacity>
         </View>:null
         }
+
       </View>
     );
   }
