@@ -249,6 +249,7 @@ export default class Carousel extends Component {
     return (
       <View style={[style, {alignItems: 'stretch'}]}>
         <ScrollView
+          keyboardShouldPersistTaps="handled"
           style={{flex: 1}}
           horizontal={horizontal}
           contentContainerStyle={contentContainerStyle}
