@@ -141,6 +141,7 @@ export default class SegmentedView extends Component {
 
   renderCarousel() {
     let {children} = this.props;
+    const {scrollViewProps={}} =  this.props;
     return (
       <Carousel
         style={{flex: 1}}
@@ -149,6 +150,7 @@ export default class SegmentedView extends Component {
         cycle={false}
         ref='carousel'
         onChange={index => this.onCarouselChange(index)}
+        {...scrollViewProps}
       >
         {children}
       </Carousel>
