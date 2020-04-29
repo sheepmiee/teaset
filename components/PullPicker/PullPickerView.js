@@ -31,7 +31,7 @@ export default class PullPickerView extends Overlay.PullView {
   }
 
   renderContent() {
-    let {title, items, selectedIndex, getItemText} = this.props;
+    let {title, items, selectedIndex, getItemText, itemStyle={}, itemTextStyle={}, numberOfLines=1} = this.props;
 
     let headerRowStyle = {
       backgroundColor: Theme.pupHeaderColor,
@@ -63,11 +63,13 @@ export default class PullPickerView extends Overlay.PullView {
           {items && items.map((item, index) => (
             <this.constructor.Item
               key={'item' + index}
-              style={{backgroundColor: Theme.pupItemColor}}
+              style={{backgroundColor: Theme.pupItemColor,...itemStyle}}
+              titleStyle={itemTextStyle}
               title={getItemText ? getItemText(item, index) : item}
               selected={index === selectedIndex}
               bottomSeparator={<View style={{backgroundColor: Theme.pupSeparatorColor, height: Theme.rowSeparatorLineWidth}} />}
               onPress={() => this.onItemPress(index)}
+              numberOfLines={numberOfLines}
               />
           ))}
           <View style={{height: Theme.screenInset.bottom}} />
