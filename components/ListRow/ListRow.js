@@ -168,11 +168,11 @@ export default class ListRow extends Component {
   }
 
   renderTitle() {
-    let {title, detail, titleStyle, titlePlace} = this.props;
+    let {title, detail, titleStyle, titlePlace, numberOfLines} = this.props;
     if (titlePlace === 'none') return null;
     if (typeof title === 'string' || typeof title === 'number') {
       let textStyle = (!detail && titlePlace === 'left') ? {flexGrow: 1, flexShrink: 1} : null;
-      return <Label style={[textStyle, titleStyle]} type='title' text={title} />;
+      return <Label numberOfLines={numberOfLines?numberOfLines:1} style={[textStyle, titleStyle]} type='title' text={title} />;
     }
     return title;
   }
