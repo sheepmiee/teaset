@@ -14,7 +14,7 @@ export default class Toast extends Overlay {
   static defaultDuration = 'short';
   static defaultPosition = 'center';
   static messageDefaultDuration = 'short';
-  static messageDefaultPosition = 'bottom';
+  static messageDefaultPosition = 'center';
 
   // options shape
   //   text: PropTypes.oneOfType([PropTypes.element, PropTypes.string, PropTypes.number]),
